@@ -1,421 +1,392 @@
 import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  image: string;
+  description: string;
+  inStock: boolean;
+}
+
 const Index = () => {
-  const [activeTab, setActiveTab] = useState('museums');
+  const [cart, setCart] = useState<number[]>([]);
+  const [activeCategory, setActiveCategory] = useState('all');
 
-  const museums = [
+  const products: Product[] = [
     {
-      title: 'Музей византийского искусства',
-      description: 'Коллекция уникальных артефактов византийской эпохи',
-      icon: 'Palette'
+      id: 1,
+      name: 'Византійская икона',
+      price: 15000,
+      category: 'icons',
+      image: '🖼️',
+      description: 'Рукописная икона въ традиціонномъ стилѣ',
+      inStock: true
     },
     {
-      title: 'Археологический музей',
-      description: 'Находки древнего Херсонеса Таврического',
-      icon: 'Landmark'
+      id: 2,
+      name: 'Античная амфора',
+      price: 25000,
+      category: 'ceramics',
+      image: '🏺',
+      description: 'Копія древнегреческой амфоры',
+      inStock: true
     },
     {
-      title: 'Музей церковного искусства',
-      description: 'Собрание икон, литургических предметов и реликвий',
-      icon: 'Church'
+      id: 3,
+      name: 'Серебряный крестъ',
+      price: 8000,
+      category: 'jewelry',
+      image: '✝️',
+      description: 'Серебро 925 пробы съ позолотой',
+      inStock: true
+    },
+    {
+      id: 4,
+      name: 'Книга исторіи Херсонеса',
+      price: 1200,
+      category: 'books',
+      image: '📖',
+      description: 'Иллюстрированное изданіе',
+      inStock: true
+    },
+    {
+      id: 5,
+      name: 'Мозаичное панно',
+      price: 45000,
+      category: 'ceramics',
+      image: '🎨',
+      description: 'Византійская мозаика ручной работы',
+      inStock: false
+    },
+    {
+      id: 6,
+      name: 'Ладанъ церковный',
+      price: 500,
+      category: 'church',
+      image: '🕯️',
+      description: 'Афонскій ладанъ 100г',
+      inStock: true
+    },
+    {
+      id: 7,
+      name: 'Бронзовая статуэтка',
+      price: 12000,
+      category: 'souvenirs',
+      image: '🗿',
+      description: 'Копія античной скульптуры',
+      inStock: true
+    },
+    {
+      id: 8,
+      name: 'Чётки изъ янтаря',
+      price: 3500,
+      category: 'jewelry',
+      image: '📿',
+      description: 'Балтійскій янтарь, 33 зерна',
+      inStock: true
+    },
+    {
+      id: 9,
+      name: 'Карта древняго Херсонеса',
+      price: 800,
+      category: 'souvenirs',
+      image: '🗺️',
+      description: 'Печать на пергаментѣ',
+      inStock: true
     }
   ];
 
-  const tours = [
-    {
-      title: 'Обзорная экскурсия',
-      duration: '2 часа',
-      description: 'Знакомство с основными достопримечательностями комплекса'
-    },
-    {
-      title: 'Храмовый комплекс',
-      duration: '1.5 часа',
-      description: 'История и архитектура православных храмов'
-    },
-    {
-      title: 'Археологические раскопки',
-      duration: '2.5 часа',
-      description: 'Углубленная экскурсия по древнему городу'
-    }
+  const categories = [
+    { id: 'all', name: 'Всѣ товары', icon: 'Store' },
+    { id: 'icons', name: 'Иконы', icon: 'Image' },
+    { id: 'ceramics', name: 'Керамика', icon: 'Package' },
+    { id: 'jewelry', name: 'Украшенія', icon: 'Gem' },
+    { id: 'books', name: 'Книги', icon: 'Book' },
+    { id: 'church', name: 'Церковная утварь', icon: 'Church' },
+    { id: 'souvenirs', name: 'Сувениры', icon: 'Gift' }
   ];
 
-  const news = [
-    {
-      date: '15 декабря 2024',
-      title: 'Открытие новой выставки византийского искусства',
-      content: 'Приглашаем посетить уникальную экспозицию, посвященную культуре Византии'
-    },
-    {
-      date: '10 декабря 2024',
-      title: 'Праздничные мероприятия в Новом Херсонесе',
-      content: 'Расписание рождественских концертов и богослужений'
-    },
-    {
-      date: '5 декабря 2024',
-      title: 'Завершение археологического сезона',
-      content: 'Итоги раскопок 2024 года и новые находки'
+  const filteredProducts = activeCategory === 'all' 
+    ? products 
+    : products.filter(p => p.category === activeCategory);
+
+  const addToCart = (productId: number) => {
+    setCart([...cart, productId]);
+  };
+
+  const removeFromCart = (productId: number) => {
+    const index = cart.indexOf(productId);
+    if (index > -1) {
+      const newCart = [...cart];
+      newCart.splice(index, 1);
+      setCart(newCart);
     }
-  ];
+  };
+
+  const getCartItemCount = (productId: number) => {
+    return cart.filter(id => id === productId).length;
+  };
+
+  const getTotalPrice = () => {
+    return cart.reduce((sum, id) => {
+      const product = products.find(p => p.id === id);
+      return sum + (product?.price || 0);
+    }, 0);
+  };
 
   return (
     <div className="min-h-screen bg-background byzantine-pattern">
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
       
       <header className="border-b-2 ornament-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center border-2 border-secondary/30">
-                <Icon name="Church" size={36} className="text-secondary" />
+              <div className="w-14 h-14 bg-secondary/20 rounded-full flex items-center justify-center border-2 border-secondary/30">
+                <Icon name="Store" size={28} className="text-secondary" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-foreground tracking-wide">Новый Херсонесъ</h1>
-                <p className="text-sm text-muted-foreground uppercase tracking-widest">Музейно-храмовый комплексъ</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-wide">Лавка Херсонеса</h1>
+                <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-widest">Музейный магазинъ</p>
               </div>
             </div>
-            <Button variant="outline" className="gap-2 border-2 hover:bg-secondary/10">
-              <Icon name="Phone" size={18} />
-              <span className="hidden md:inline">Связаться</span>
+            <Button className="gap-2 bg-secondary hover:bg-secondary/90 relative">
+              <Icon name="ShoppingCart" size={20} />
+              {cart.length > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-accent text-accent-foreground">
+                  {cart.length}
+                </Badge>
+              )}
+              <span className="hidden md:inline">Корзина</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <section className="py-20 relative overflow-hidden">
+      <section className="py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-secondary/5 via-transparent to-transparent"></div>
         <div className="container mx-auto px-4 relative">
           <div className="max-w-4xl mx-auto text-center animate-fade-in">
-            <div className="flex justify-center mb-6">
-              <div className="w-24 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
+            <div className="flex justify-center mb-4">
+              <div className="w-20 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
             </div>
-            <h2 className="text-6xl md:text-7xl font-bold mb-8 text-foreground">
-              Добро пожаловать
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+              Музейная Лавка
             </h2>
-            <p className="text-2xl text-muted-foreground leading-relaxed font-serif">
-              Откройте для себя величие древней истории и православной культуры. 
-              Музейно-храмовый комплекс объединяет археологическое наследіе и духовныя традиціи 
-              тысячелѣтней Византійской цивилизаціи.
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+              Уникальныя изделія и сувениры, вдохновлённые древней исторіей и византійской культурой. 
+              Каждый товаръ хранитъ частицу тысячелѣтняго наслѣдія.
             </p>
-            <div className="flex justify-center mt-8">
-              <div className="w-24 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
+            <div className="flex justify-center mt-6">
+              <div className="w-20 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-12">
+      <section className="pb-16">
         <div className="container mx-auto px-4">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-12 h-auto gap-3 bg-card/60 p-2 border-2 border-border">
-              <TabsTrigger 
-                value="museums" 
-                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground flex items-center gap-2 py-4 text-base border border-transparent data-[state=active]:border-secondary/50"
-              >
-                <Icon name="Building" size={20} />
-                <span className="hidden sm:inline">Музеи</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="tours"
-                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground flex items-center gap-2 py-4 text-base border border-transparent data-[state=active]:border-secondary/50"
-              >
-                <Icon name="Users" size={20} />
-                <span className="hidden sm:inline">Экскурсіи</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="map"
-                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground flex items-center gap-2 py-4 text-base border border-transparent data-[state=active]:border-secondary/50"
-              >
-                <Icon name="Map" size={20} />
-                <span className="hidden sm:inline">Карта</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="news"
-                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground flex items-center gap-2 py-4 text-base border border-transparent data-[state=active]:border-secondary/50"
-              >
-                <Icon name="Newspaper" size={20} />
-                <span className="hidden sm:inline">Новости</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="history"
-                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground flex items-center gap-2 py-4 text-base border border-transparent data-[state=active]:border-secondary/50"
-              >
-                <Icon name="BookOpen" size={20} />
-                <span className="hidden sm:inline">Исторія</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="help"
-                className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground flex items-center gap-2 py-4 text-base border border-transparent data-[state=active]:border-secondary/50"
-              >
-                <Icon name="HelpCircle" size={20} />
-                <span className="hidden sm:inline">Помощь</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="museums" className="animate-slide-up">
-              <div className="grid md:grid-cols-3 gap-8">
-                {museums.map((museum, index) => (
-                  <Card key={index} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-secondary/50 bg-card/80 backdrop-blur-sm">
-                    <CardHeader>
-                      <div className="w-16 h-16 bg-secondary/10 rounded-sm flex items-center justify-center mb-6 border-2 border-secondary/20">
-                        <Icon name={museum.icon as any} size={28} className="text-secondary" />
-                      </div>
-                      <CardTitle className="text-2xl mb-3">{museum.title}</CardTitle>
-                      <CardDescription className="text-base leading-relaxed">{museum.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button variant="outline" className="w-full gap-2 border-2 hover:bg-secondary/10 py-6 text-base">
-                        Подробнѣе
-                        <Icon name="ArrowRight" size={18} />
-                      </Button>
-                    </CardContent>
-                  </Card>
+          <div className="mb-8">
+            <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 gap-2 bg-card/60 p-2 border-2 border-border h-auto">
+                {categories.map(cat => (
+                  <TabsTrigger 
+                    key={cat.id}
+                    value={cat.id}
+                    className="data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground flex items-center gap-2 py-3 text-sm border border-transparent data-[state=active]:border-secondary/50"
+                  >
+                    <Icon name={cat.icon as any} size={18} />
+                    <span className="hidden sm:inline">{cat.name}</span>
+                  </TabsTrigger>
                 ))}
-              </div>
-            </TabsContent>
+              </TabsList>
+            </Tabs>
+          </div>
 
-            <TabsContent value="tours" className="animate-slide-up">
-              <div className="grid md:grid-cols-3 gap-8">
-                {tours.map((tour, index) => (
-                  <Card key={index} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-secondary/50 bg-card/80 backdrop-blur-sm">
-                    <CardHeader>
-                      <div className="flex items-center justify-between mb-3">
-                        <CardTitle className="text-2xl">{tour.title}</CardTitle>
-                        <div className="flex items-center gap-2 text-accent font-semibold">
-                          <Icon name="Clock" size={18} />
-                          <span className="text-sm">{tour.duration}</span>
-                        </div>
-                      </div>
-                      <CardDescription className="text-base leading-relaxed">{tour.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button className="w-full bg-secondary hover:bg-secondary/90 gap-2 py-6 text-base">
-                        <Icon name="Calendar" size={18} />
-                        Записаться
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="map" className="animate-slide-up">
-              <Card className="border-2 bg-card/80 backdrop-blur-sm">
-                <CardHeader className="border-b-2 ornament-border">
-                  <CardTitle className="text-3xl">Интерактивная карта территоріи</CardTitle>
-                  <CardDescription className="text-base mt-2">
-                    Схема расположенія музеевъ, храмовъ и археологическихъ объектовъ
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-8">
-                  <div className="bg-muted/50 border-2 border-border rounded-sm h-[500px] flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-24 h-24 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-secondary/20">
-                        <Icon name="Map" size={48} className="text-secondary" />
-                      </div>
-                      <p className="text-xl text-muted-foreground mb-6">Интерактивная карта комплекса</p>
-                      <Button className="gap-2 py-6 px-8 text-base bg-secondary hover:bg-secondary/90">
-                        <Icon name="Download" size={18} />
-                        Скачать планъ въ PDF
-                      </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-up">
+            {filteredProducts.map(product => {
+              const inCart = getCartItemCount(product.id);
+              return (
+                <Card key={product.id} className="border-2 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:border-secondary/50 flex flex-col">
+                  <CardHeader>
+                    <div className="w-full h-32 bg-secondary/5 rounded-sm flex items-center justify-center mb-4 border-2 border-secondary/10 text-6xl">
+                      {product.image}
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="news" className="animate-slide-up">
-              <div className="space-y-6">
-                {news.map((item, index) => (
-                  <Card key={index} className="hover:shadow-xl transition-all duration-300 border-2 hover:border-secondary/50 bg-card/80 backdrop-blur-sm">
-                    <CardHeader>
-                      <div className="flex items-center gap-3 text-base text-muted-foreground mb-3">
-                        <Icon name="Calendar" size={18} />
-                        <span className="font-semibold">{item.date}</span>
-                      </div>
-                      <CardTitle className="text-2xl mb-3">{item.title}</CardTitle>
-                      <CardDescription className="text-base leading-relaxed">{item.content}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button variant="ghost" className="gap-2 text-base hover:bg-secondary/10">
-                        Читать далѣе
-                        <Icon name="ArrowRight" size={18} />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="history" className="animate-slide-up">
-              <Card className="border-2 bg-card/80 backdrop-blur-sm">
-                <CardHeader className="border-b-2 ornament-border pb-8">
-                  <div className="flex justify-center mb-6">
-                    <div className="w-32 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
-                  </div>
-                  <CardTitle className="text-5xl text-center">Исторія комплекса</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-12">
-                  <div className="max-w-3xl mx-auto space-y-8 text-muted-foreground leading-relaxed text-lg">
-                    <div className="relative pl-8 border-l-2 border-secondary/30">
-                      <div className="absolute -left-2 top-0 w-3 h-3 bg-secondary rounded-full"></div>
-                      <p className="mb-6">
-                        Музейно-храмовый комплексъ "Новый Херсонесъ" созданъ на мѣстѣ древняго 
-                        греческаго города Херсонеса Тавріческаго, основаннаго въ V вѣкѣ до н.э. 
-                        Это уникальное мѣсто, гдѣ соединяются античная исторія и православныя традиціи.
-                      </p>
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-xl">{product.name}</CardTitle>
+                      {!product.inStock && (
+                        <Badge variant="outline" className="text-xs">Нѣтъ въ наличіи</Badge>
+                      )}
                     </div>
-                    
-                    <div className="relative pl-8 border-l-2 border-secondary/30">
-                      <div className="absolute -left-2 top-0 w-3 h-3 bg-secondary rounded-full"></div>
-                      <p className="mb-6">
-                        Древній Херсонесъ былъ важнѣйшимъ центромъ Сѣвернаго Причерноморья, здѣсь 
-                        въ 988 году принялъ крещеніе великій князь Владиміръ, что стало отправной 
-                        точкой христіанизаціи Руси и началомъ тысячелѣтней духовной традиціи.
-                      </p>
-                    </div>
-                    
-                    <div className="relative pl-8 border-l-2 border-secondary/30">
-                      <div className="absolute -left-2 top-0 w-3 h-3 bg-secondary rounded-full"></div>
-                      <p>
-                        Современный комплексъ включаетъ археологическіе памятники, музейныя экспозиціи 
-                        и дѣйствующіе храмы, создавая уникальное пространство для изученія исторіи 
-                        и духовнаго просвѣщенія. Каждый камень хранитъ память о величіи Византійской имперіи.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="help" className="animate-slide-up">
-              <div className="grid md:grid-cols-2 gap-8">
-                <Card className="border-2 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-                  <CardHeader className="border-b ornament-border">
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <Icon name="Clock" size={28} className="text-secondary" />
-                      Режимъ работы
-                    </CardTitle>
+                    <CardDescription className="text-base leading-relaxed mt-2">
+                      {product.description}
+                    </CardDescription>
                   </CardHeader>
-                  <CardContent className="pt-6 space-y-3 text-muted-foreground text-base">
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Вторникъ - воскресенье: 9:00 - 18:00
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Понедѣльникъ: выходной день
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Касса закрывается за 30 минутъ до окончанія работы
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-2 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-                  <CardHeader className="border-b ornament-border">
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <Icon name="Coins" size={28} className="text-secondary" />
-                      Стоимость посѣщенія
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-6 space-y-3 text-muted-foreground text-base">
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Взрослый билетъ: 500 ₽
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Льготный билетъ: 250 ₽
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Дѣти до 7 лѣтъ: безплатно
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-2 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-                  <CardHeader className="border-b ornament-border">
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <Icon name="MapPin" size={28} className="text-secondary" />
-                      Какъ добраться
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-6 space-y-3 text-muted-foreground text-base">
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Адресъ: г. Севастополь, ул. Древняя, 1
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Автобусы: №2, №109, №110
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Парковка: безплатная
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-2 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-                  <CardHeader className="border-b ornament-border">
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <Icon name="Phone" size={28} className="text-secondary" />
-                      Контакты
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-6 space-y-4 text-muted-foreground text-base">
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Телефонъ: +7 (978) 123-45-67
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
-                      Email: info@novyhersones.ru
-                    </p>
-                    <div className="flex gap-3 pt-3">
-                      <Button variant="outline" size="icon" className="border-2 hover:bg-secondary/10 w-12 h-12">
-                        <Icon name="Facebook" size={20} />
-                      </Button>
-                      <Button variant="outline" size="icon" className="border-2 hover:bg-secondary/10 w-12 h-12">
-                        <Icon name="Instagram" size={20} />
-                      </Button>
-                      <Button variant="outline" size="icon" className="border-2 hover:bg-secondary/10 w-12 h-12">
-                        <Icon name="Youtube" size={20} />
-                      </Button>
+                  <CardContent className="flex-grow">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-foreground">
+                        {product.price.toLocaleString('ru-RU')}
+                      </span>
+                      <span className="text-lg text-muted-foreground">₽</span>
                     </div>
                   </CardContent>
+                  <CardFooter className="flex gap-2">
+                    {product.inStock ? (
+                      <>
+                        {inCart > 0 ? (
+                          <div className="flex items-center gap-2 w-full">
+                            <Button 
+                              variant="outline" 
+                              size="icon"
+                              onClick={() => removeFromCart(product.id)}
+                              className="border-2"
+                            >
+                              <Icon name="Minus" size={18} />
+                            </Button>
+                            <div className="flex-grow text-center font-bold text-lg">
+                              {inCart}
+                            </div>
+                            <Button 
+                              size="icon"
+                              onClick={() => addToCart(product.id)}
+                              className="bg-secondary hover:bg-secondary/90"
+                            >
+                              <Icon name="Plus" size={18} />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button 
+                            className="w-full gap-2 bg-secondary hover:bg-secondary/90 py-6"
+                            onClick={() => addToCart(product.id)}
+                          >
+                            <Icon name="ShoppingCart" size={18} />
+                            Въ корзину
+                          </Button>
+                        )}
+                      </>
+                    ) : (
+                      <Button disabled className="w-full" variant="outline">
+                        Недоступно
+                      </Button>
+                    )}
+                  </CardFooter>
                 </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
+              );
+            })}
+          </div>
         </div>
       </section>
 
-      <footer className="border-t-2 ornament-border mt-20 py-12 bg-card/60 backdrop-blur-sm relative">
+      {cart.length > 0 && (
+        <div className="fixed bottom-6 right-6 z-50 animate-fade-in">
+          <Card className="border-2 border-secondary bg-card/95 backdrop-blur-sm shadow-2xl min-w-[280px]">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Icon name="ShoppingBag" size={20} />
+                Ваша корзина
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="flex justify-between text-base">
+                <span className="text-muted-foreground">Товаровъ:</span>
+                <span className="font-semibold">{cart.length}</span>
+              </div>
+              <div className="flex justify-between text-lg font-bold border-t pt-2">
+                <span>Итого:</span>
+                <span className="text-secondary">{getTotalPrice().toLocaleString('ru-RU')} ₽</span>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full gap-2 bg-accent hover:bg-accent/90 text-accent-foreground py-6">
+                <Icon name="CreditCard" size={18} />
+                Оформить заказъ
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
+
+      <section className="py-16 bg-secondary/5 border-y-2 ornament-border">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-secondary/30">
+                <Icon name="Truck" size={32} className="text-secondary" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Доставка по всей Россіи</h3>
+              <p className="text-muted-foreground">Безопасная упаковка и быстрая доставка</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-secondary/30">
+                <Icon name="Shield" size={32} className="text-secondary" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Гарантія подлинности</h3>
+              <p className="text-muted-foreground">Сертификаты на всю продукцію</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-secondary/30">
+                <Icon name="Gift" size={32} className="text-secondary" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Подарочная упаковка</h3>
+              <p className="text-muted-foreground">Красивое оформленіе въ подарокъ</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t-2 ornament-border py-12 bg-card/60 backdrop-blur-sm relative">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center border-2 border-secondary/30">
-                <Icon name="Church" size={24} className="text-secondary" />
-              </div>
-              <p className="text-base text-muted-foreground">
-                © 2024 Новый Херсонесъ. Всѣ права защищены
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
+                <Icon name="Store" size={20} />
+                Лавка Херсонеса
+              </h4>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Музейный магазинъ при комплексѣ "Новый Херсонесъ". 
+                Уникальныя изделія и сувениры съ тысячелѣтней исторіей.
               </p>
             </div>
-            <div className="flex gap-6 text-base text-muted-foreground">
-              <a href="#" className="hover:text-foreground transition-colors border-b border-transparent hover:border-secondary">
-                Политика конфиденціальности
-              </a>
-              <a href="#" className="hover:text-foreground transition-colors border-b border-transparent hover:border-secondary">
-                Правила посѣщенія
-              </a>
+            <div>
+              <h4 className="font-bold text-lg mb-4">Информація</h4>
+              <ul className="space-y-2 text-muted-foreground text-sm">
+                <li><a href="#" className="hover:text-foreground transition-colors">О насъ</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Доставка и оплата</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Возвратъ товара</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Сертификаты</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-lg mb-4">Контакты</h4>
+              <ul className="space-y-2 text-muted-foreground text-sm">
+                <li className="flex items-center gap-2">
+                  <Icon name="Phone" size={16} />
+                  +7 (978) 123-45-67
+                </li>
+                <li className="flex items-center gap-2">
+                  <Icon name="Mail" size={16} />
+                  shop@novyhersones.ru
+                </li>
+                <li className="flex items-center gap-2">
+                  <Icon name="MapPin" size={16} />
+                  г. Севастополь, ул. Древняя, 1
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+            <p>© 2024 Лавка Херсонеса. Всѣ права защищены</p>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-foreground transition-colors">Политика конфиденціальности</a>
+              <a href="#" className="hover:text-foreground transition-colors">Договоръ оферты</a>
             </div>
           </div>
         </div>
