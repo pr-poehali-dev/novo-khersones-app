@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Cinzel:wght@400;600;700&family=Crimson+Text:wght@400;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,35 +6,35 @@
 
 @layer base {
   :root {
-    --background: 0 0% 97%;
-    --foreground: 220 13% 13%;
+    --background: 35 25% 96%;
+    --foreground: 25 30% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 13%;
+    --card: 40 35% 98%;
+    --card-foreground: 25 30% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 13%;
+    --popover: 40 35% 98%;
+    --popover-foreground: 25 30% 20%;
 
-    --primary: 220 13% 13%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 30 40% 35%;
+    --primary-foreground: 40 35% 98%;
 
-    --secondary: 262 52% 67%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 35 60% 55%;
+    --secondary-foreground: 40 35% 98%;
 
-    --muted: 220 13% 95%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 35 20% 90%;
+    --muted-foreground: 25 15% 45%;
 
-    --accent: 199 89% 48%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 45 85% 50%;
+    --accent-foreground: 25 30% 20%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 40 35% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262 52% 67%;
+    --border: 35 25% 85%;
+    --input: 35 25% 85%;
+    --ring: 35 60% 55%;
 
-    --radius: 0.75rem;
+    --radius: 0.25rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -92,7 +92,9 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: "Open Sans", sans-serif;
+    font-family: "Crimson Text", serif;
+    font-size: 17px;
+    line-height: 1.7;
   }
 
   h1,
@@ -101,6 +103,36 @@
   h4,
   h5,
   h6 {
-    font-family: "Montserrat", sans-serif;
+    font-family: "Cinzel", serif;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  .ornament-border {
+    border-image: linear-gradient(
+        90deg,
+        transparent,
+        hsl(var(--secondary)),
+        transparent
+      )
+      1;
+  }
+
+  .byzantine-pattern {
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        hsl(var(--secondary) / 0.03) 10px,
+        hsl(var(--secondary) / 0.03) 20px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 10px,
+        hsl(var(--secondary) / 0.03) 10px,
+        hsl(var(--secondary) / 0.03) 20px
+      );
   }
 }
